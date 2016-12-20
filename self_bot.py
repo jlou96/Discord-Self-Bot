@@ -131,6 +131,16 @@ async def save_configs():
             file.write(save)
         await asyncio.sleep(5)
 
+@bot.command(pass_context=True)
+async def merry(ctx):
+    server = ctx.message.server
+    for user in server.members:
+        if user.nick == None:
+            nickname = "Merry {}".format(user.name)
+        else:
+            nickname = "Merry {}".format(user.nick)
+        await bot.change_nickname(user, nickname)
+
 ########################################################################################################################
 
 ##############################

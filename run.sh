@@ -4,8 +4,6 @@ COUNTER=0
 while :
 do
         sleep 1
-        COUNTER=`expr $COUNTER + 1`
-        python35 self_bot.py
-        now=$(date + "%T")
-        echo "Self Has restarted $COUNTER times as of $now"
+        python3 self_bot.py
+        echo "SELF BOT REBOOTING"
 done
