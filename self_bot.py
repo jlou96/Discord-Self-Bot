@@ -6,14 +6,7 @@ import inspect
 
 # Set's bot's desciption and prefixes in a list
 description = "A self bot to do things that are useful"
-bot = commands.Bot(command_prefix=['self.', "s."], description=description, self_bot=True)
-
-
-ready_modules = {
-    "moderation": "Moderation"
-}
-
-live_modules = {}
+bot = commands.Bot(command_prefix=["`"], description=description, self_bot=True)
 
 ########################################################################################################################
 
