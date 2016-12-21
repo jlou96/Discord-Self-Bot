@@ -3,29 +3,52 @@ from discord.ext import commands
 import json
 import asyncio
 
+tag_location = "tags.json"
+
 class Tags():
+
+
 
     def __init__(self, bot):
         self.bot = bot
 
-        with open("config/tags.json") as file:
-            self.tags = json.load(file)
+        try:
+            with open(tag_location) as f:
+                try:
+                    self.tags = json.load(f)
+                # if file is heck
+                except json.JSONDecodeError:
+                    self.create_tags()
+        except FileNotFoundError:
+            self.create_tags()
+
+
+
+
 
         asyncio.Task(self.save_tags())
+
+    def create_tags(self):
+        save = "{}"
+        with open(tag_location, "w") as f:
+            f.write(save)
+        with open(tag_location) as f:
+            self.tags = json.load(f)
 
     @commands.command()
     async def rmtag(self, command: str):
         """Removes a tag
         Usage:
         self.rmtag tag"""
+        command = command.lower()
         if command in self.tags:
             del self.tags[command]
             await self.bot.say("Tag {} has been removed :thumbsup:".format(command))
         else:
             await self.bot.say("Tag not registered, could not delete :thumbsdown: ")
 
-    @commands.command()
-    async def tags(self):
+    @commands.command(name="tags")
+    async def _tags(self):
         """Lists the tags added
         Usage:
         self.tags"""
@@ -35,25 +58,27 @@ class Tags():
         await self.bot.say("{0} ```".format(taglist))
 
     @commands.command(pass_context=True)
-    async def tag(self, ctx, input : str, *, output: str = None):
+    async def tag(self, ctx, userinput : str, *, output: str = None):
         """Adds or displays a tag
         Usage:
         self.tag tag_name tag_data
         If 'tag_name' is a saved tag it will display that, else it will
         create a new tag using 'tag_data'"""
-        if input in self.tags:
-            await self.bot.say(self.tags[input])
+        userinput = userinput.lower()
+        if userinput in self.tags:
+            await self.bot.say(self.tags[userinput])
         else:
-            self.tags[input] = output
-            if output.startswith("http"):
-                await self.bot.say("Tag {} has been added with output <{}> :thumbsup:".format(input, output))
-            else:
-                await self.bot.say("Tag {} has been added with output {} :thumbsup:".format(input, output))
+            if output is not None:
+                self.tags[userinput] = output
+                if output.startswith("http"):
+                    await self.bot.say("Tag {} has been added with output <{}> :thumbsup:".format(userinput, output))
+                else:
+                    await self.bot.say("Tag {} has been added with output {} :thumbsup:".format(userinput, output))
 
     async def save_tags(self):
         while True:
             save = json.dumps(self.tags)
-            with open("config/tags.json", "w") as data:
+            with open(tag_location, "w") as data:
                 data.write(save)
             await asyncio.sleep(60)
 

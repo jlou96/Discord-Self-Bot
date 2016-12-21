@@ -12,7 +12,7 @@ class Moderation():
     async def ban(self, member: discord.Member = None):
         """Bans a member
         Usage:
-        $ban @recchan
+        self.ban @recchan
         User must have ban member permissions"""
         # Are they trying to ban nobody? Are they stupid?
         # Why do they have mod powers if they're this much of an idiot?
@@ -31,7 +31,7 @@ class Moderation():
     async def kick(self, member: discord.Member = None):
         """Kicks a member
         Usage:
-        $kick @recchan
+        self.kick @recchan
         User must have kick member permissions"""
         # Same as above, are they stupid
         if member is None:
@@ -52,7 +52,7 @@ class Moderation():
     async def info(self, ctx, member : discord.Member = None):
         """Infomation on a user
         Usage:
-        $info @DiNitride
+        self.info @DiNitride
         If no member is specified, it defaults to the sender"""
         if member == None:
             member = ctx.message.author
@@ -71,7 +71,7 @@ class Moderation():
     async def serverinfo(self, ctx):
         """Shows server information
         Usage:
-        $serverinfo"""
+        self.serverinfo"""
         server = ctx.message.server
         afk = server.afk_timeout / 60
         await self.bot.say(

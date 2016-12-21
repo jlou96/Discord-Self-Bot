@@ -9,22 +9,19 @@ class Admin():
     # Changes the bot's game
     @commands.command(pass_conext=True)
     async def status(self, *, status: str):
-        """Updates the Bot's status
+        """Updates the user's status
         Usage:
-        $status This is my status"""
+        self.status This is my status"""
         # Update the bots game
-        await self.bot.change_presence(game=discord.Game(name=status))
+        await self.bot.change_presence(game=discord.Game(name=status), afk=True, status=discord.Status.idle)
         await self.bot.say("Status updated to {}".format(status))
 
-    @commands.command()
-    async def invite(self, *server: str):
+    @commands.command(pass_context=True)
+    async def invite(self, ctx):
         """Creates a server invite
         Usage:
-        $invite The Never Ending GAF"""
-        server = discord.utils.get(self.bot.servers, name=server)
-        if server is None:
-            await self.bot.say("No server found")
-            return
+        self.invite"""
+        server = ctx.message.server
         invite = await self.bot.create_invite(server)
         await self.bot.say(invite.url)
 
