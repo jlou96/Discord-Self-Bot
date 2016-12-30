@@ -3,10 +3,17 @@ from discord.ext import commands
 import json
 import asyncio
 import inspect
+import argparse
+
+
 
 # Set's bot's desciption and prefixes in a list
 description = "A self bot to do things that are useful"
 bot = commands.Bot(command_prefix=["`"], description=description, self_bot=True)
+
+# # load bot config
+# with open("config/config.json") as f:
+#     bot.config = json.load(f)
 
 ########################################################################################################################
 
@@ -39,13 +46,19 @@ async def on_ready():
 # Testing the response of the bot
 @bot.command()
 async def ping():
-    """Pong"""
+    """Pong. Test's responsiveness of bot"""
     await bot.say("Pong")
 
 @bot.command()
 async def source():
     """Source code"""
     await bot.say("https://github.com/DiNitride/Discord-Self-Bot")
+
+# Invite link to the bot server
+@bot.command()
+async def server():
+    """The bot's server, for updates or something"""
+    await bot.say("https://discord.gg/Eau7uhf")
 
 @bot.command(pass_context=True, name="eval")
 async def eval_(ctx, *, code: str):
@@ -67,6 +80,7 @@ async def eval_(ctx, *, code: str):
 async def massnick(ctx, nickname: str):
     """Mass nicknames everyone on the server"""
     server = ctx.message.server
+    counter = 0
     for user in server.members:
         if user.nick == None:
             nickname = "{} {}".format(nickname, user.name)
@@ -75,22 +89,23 @@ async def massnick(ctx, nickname: str):
         try:
             await bot.change_nickname(user, nickname)
         except discord.HTTPException:
+            counter += 1
             continue
+    await bot.say("Finished nicknaming server. {} nicknames could not be completed.".format(counter))
 
 @bot.command(pass_context=True)
 async def resetnicks(ctx):
     server = ctx.message.server
     for user in server.members:
         try:
-            await bot.change_nickname(user)
+            await bot.change_nickname(user, nickname=None)
         except discord.HTTPException:
             continue
+    await bot.say("Finished resetting server nicknames")
 
 ########################################################################################################################
 
-##############################
-## FANCY TOKEN LOGIN STUFFS ##
-##############################
+if __name__ == "__main__":
 
-with open("self_token.txt") as token:
-    bot.run(token.read(), bot=False)
+    with open("self_token.txt") as token:
+        bot.run(token.read(), bot=False)
