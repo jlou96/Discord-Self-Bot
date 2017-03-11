@@ -104,7 +104,7 @@ async def dl_images(ctx, n, **kwargs):
     print("Finished logging images")
     counter = 0
     for url in image_urls:
-        if ("4chan" in url or "4cdn" in url) and fchan:
+        if ("4chan.org" in url or "4cdn.org" in url) and fchan:
             continue
         # e.g. for url="https://puu.sh/uCW58/9091a06171.png", name would be "9091a06171.png"
         tmp = url.split('/')
