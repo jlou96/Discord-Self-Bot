@@ -3,6 +3,7 @@ from discord.ext import commands
 import json
 import asyncio
 import aiohttp
+import os.path
 
 # Set's bot's desciption and prefixes in a list
 description = "A self bot to do things that are useful"
@@ -82,24 +83,11 @@ async def download_image(image_url):
             return image_data
     return None
 
-def try_make_images_folder():
-    try:
-        os.makedir('images/')
-    except OSError:
-        print("OSError: subdirectory images already exists")
-        print("         creating new subdirectory images_dupe instead")
-        try:
-            os.makedir('images_dupe/')
-        except OSError:
-            print("OSError: subdirectory images_dupe already exists, exiting")
-            exit()
-
 # Scan last n messages for those containing images and download the image files
 # kwargs: fchan=False by default, set True to enable downloading of images hosted on 4chan
 @bot.command(pass_context=True)
 async def dl_images(ctx, n, **kwargs):
     print("dl_images() called")
-    try_make_images_folder()
     image_urls = []
     dm = ctx.message.channel
     fchan = False
