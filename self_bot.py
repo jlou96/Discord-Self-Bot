@@ -82,29 +82,56 @@ async def download_image(image_url):
             return image_data
     return None
 
-# Scans last n messages for those containing images and download the image files
+def try_make_images_folder():
+    try:
+        os.makedir('images/')
+    except OSError:
+        print("OSError: subdirectory images already exists")
+        print("         creating new subdirectory images_dupe instead")
+        try:
+            os.makedir('images_dupe/')
+        except OSError:
+            print("OSError: subdirectory images_dupe already exists, exiting")
+            exit()
+
+# Scan last n messages for those containing images and download the image files
+# kwargs: fchan=False by default, set True to enable downloading of images hosted on 4chan
 @bot.command(pass_context=True)
-async def dl_images(ctx, x):
+async def dl_images(ctx, x, **kwargs):
     print("dl_images() called")
+    try_make_images_folder()
     image_urls = []
     dm = ctx.message.channel
+    fchan = False
+    if "fchan" in kwargs:
+        fchan = kwargs[fchan]
     async for m in bot.logs_from(dm, limit=int(float(x))):
         if is_valid_image_url(m.content):
             image_urls.append(m.content)
         if len(m.attachments) and is_valid_image_url(m.attachments[0]['url']):
             image_urls.append(m.attachments[0]['url'])
+    with open('log.txt', 'w') as f:
+        for url in image_urls:
+            f.write(url + '\n')
     print("Finished logging images")
     counter = 0
     for url in image_urls:
+        if ("4chan" in url or "4cdn" in url) and fchan:
+            continue
         # e.g. for url="https://puu.sh/uCW58/9091a06171.png", name would be "9091a06171.png"
         tmp = url.split('/')
         name = tmp[-1]
+        # write to image data to images/9091a06171.png, where images is an immediate subdirectory
+        if os.path.isfile('images/' + name):
+            print("{0} already exists, skipping")
+            continue
         i = await download_image(url)
         if i is None:
             counter += 1
             print("Failed to download {0}".format(url))
+            with open('log.txt', w) as f:
+                f.write('Failed to download {0}\n'.format(url))
             continue
-        # write to image data to images/9091a06171.png, where images is an immediate subdirectory
         with open('images/' + name, 'wb') as img:
             img.write(i)
     print("Finished downloading images, {0} total errors".format(counter))
