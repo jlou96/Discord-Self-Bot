@@ -97,7 +97,7 @@ def try_make_images_folder():
 # Scan last n messages for those containing images and download the image files
 # kwargs: fchan=False by default, set True to enable downloading of images hosted on 4chan
 @bot.command(pass_context=True)
-async def dl_images(ctx, x, **kwargs):
+async def dl_images(ctx, n, **kwargs):
     print("dl_images() called")
     try_make_images_folder()
     image_urls = []
@@ -105,7 +105,7 @@ async def dl_images(ctx, x, **kwargs):
     fchan = False
     if "fchan" in kwargs:
         fchan = kwargs[fchan]
-    async for m in bot.logs_from(dm, limit=int(float(x))):
+    async for m in bot.logs_from(dm, limit=int(float(n))):
         if is_valid_image_url(m.content):
             image_urls.append(m.content)
         if len(m.attachments) and is_valid_image_url(m.attachments[0]['url']):
